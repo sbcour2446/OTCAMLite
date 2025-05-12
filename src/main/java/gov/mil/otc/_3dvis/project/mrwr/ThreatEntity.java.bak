@@ -1,0 +1,252 @@
+package gov.mil.otc._3dvis.project.mrwr;
+
+import gov.mil.otc._3dvis.datamodel.timed.TimedDataSet;
+import gov.mil.otc._3dvis.datamodel.timed.ValuePairTimedData;
+import gov.mil.otc._3dvis.entity.EntityFilter;
+import gov.mil.otc._3dvis.entity.EntityLayer;
+import gov.mil.otc._3dvis.entity.PlaybackEntity;
+import gov.mil.otc._3dvis.entity.base.EntityId;
+import gov.mil.otc._3dvis.entity.render.StatusAnnotation;
+import gov.mil.otc._3dvis.worldwindex.render.Circle;
+import gov.nasa.worldwind.WorldWind;
+import gov.nasa.worldwind.avlist.AVKey;
+import gov.nasa.worldwind.geom.Position;
+import gov.nasa.worldwind.geom.coords.UTMCoord;
+import gov.nasa.worldwind.render.BasicShapeAttributes;
+import gov.nasa.worldwind.render.Material;
+import gov.nasa.worldwind.render.Path;
+import gov.nasa.worldwind.render.ShapeAttributes;
+import javafx.scene.control.CheckMenuItem;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuItem;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import static java.lang.Math.cos;
+import static java.lang.Math.sin;
+
+public class ThreatEntity extends PlaybackEntity {
+
+    public static final int MAX_RANGE = 100000;
+    private boolean showRangeRings = false;
+    private int range = 1000;
+    private Color rangeColor = Color.GRAY;
+    private final Circle rangeCircle = new Circle(Position.ZERO, 0);
+    private final Path targetLine = new Path();
+    private boolean showing = false;
+    private boolean showingTargetLine = false;
+    private boolean showTargetLine = false;
+    private final TimedDataSet<ValuePairTimedData> statusDataSet = new TimedDataSet<>();
+    private final TimedDataSet<TargetTimedData> azElTimedDataTimedDataSet = new TimedDataSet<>();
+
+    public ThreatEntity(EntityId entityId) {
+        super(entityId);
+
+        ShapeAttributes shapeAttributes = new BasicShapeAttributes();
+        shapeAttributes.setDrawInterior(false);
+        shapeAttributes.setOutlineMaterial(new Material(rangeColor));
+        rangeCircle.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
+        rangeCircle.setAttributes(shapeAttributes);
+        rangeCircle.setOffset(1);
+
+        shapeAttributes = new BasicShapeAttributes();
+        shapeAttributes.setDrawInterior(false);
+        shapeAttributes.setDrawOutline(true);
+        shapeAttributes.setOutlineMaterial(Material.ORANGE);
+        shapeAttributes.setOutlineWidth(2);
+        targetLine.setAltitudeMode(WorldWind.RELATIVE_TO_GROUND);
+        targetLine.setAttributes(shapeAttributes);
+    }
+
+    @Override
+    public long getLastUpdateTime() {
+        long baseTime = super.getLastUpdateTime();
+        long lastStatusTime = 0;
+        ValuePairTimedData data = statusDataSet.getCurrent();
+        if (data != null) {
+            lastStatusTime = data.getTimestamp();
+        }
+        return Math.max(baseTime, lastStatusTime);
+    }
+
+    @Override
+    public void addContextMenuItems(ContextMenu contextMenu) {
+        super.addContextMenuItems(contextMenu);
+
+        CheckMenuItem targetCheckMenuItem = new CheckMenuItem("Show pointing");
+        targetCheckMenuItem.setSelected(showTargetLine);
+        targetCheckMenuItem.setOnAction(actionEvent -> {
+            showTargetLine = targetCheckMenuItem.isSelected();
+        });
+        contextMenu.getItems().add(targetCheckMenuItem);
+
+        Menu menu = new Menu("Range Rings");
+        CheckMenuItem checkMenuItem = new CheckMenuItem("Enabled");
+        checkMenuItem.setSelected(isShowRangeRings());
+        checkMenuItem.setOnAction(event -> setShowRangeRings(checkMenuItem.isSelected()));
+        menu.getItems().add(checkMenuItem);
+        MenuItem settingsMenuItem = new MenuItem("Settings");
+        settingsMenuItem.setOnAction(event -> {
+            int range = RangeRingSettings.show(this);
+            setRange(range);
+        });
+        menu.getItems().add(settingsMenuItem);
+        contextMenu.getItems().add(menu);
+    }
+
+    @Override
+    public boolean update(long time, EntityFilter entityFilter) {
+        boolean hasChange = super.update(time, entityFilter);
+        hasChange |= statusDataSet.updateTime(time);
+        azElTimedDataTimedDataSet.updateTime(time);
+
+        if (hasChange && showRangeRings) {
+            Position position = getPosition();
+            boolean isDisplayable = position != null && getEntityDetail() != null &&
+                    !getEntityDetail().isOutOfComms() && isFiltered();
+            updateVisual(position, isDisplayable);
+        }
+
+        boolean doShowTargetLine = showTargetLine && getPosition() != null && isFiltered() && isAzElValid();
+        if (doShowTargetLine) {
+            if (!showingTargetLine) {
+                showingTargetLine = true;
+                EntityLayer.add(targetLine);
+                updateTargetLine();
+            } else if (hasChange) {
+                updateTargetLine();
+            }
+        } else if (showingTargetLine) {
+            showingTargetLine = false;
+            EntityLayer.remove(targetLine);
+        }
+
+        if (hasChange) {
+            updateStatusDisplay();
+        }
+
+        return hasChange;
+    }
+
+    @Override
+    public void dispose() {
+        EntityLayer.remove(targetLine);
+        EntityLayer.remove(rangeCircle);
+    }
+
+    @Override
+    protected StatusAnnotation createStatusAnnotation() {
+        return new ThreatStatusAnnotation(this);
+    }
+
+    public void addStatusData(List<ValuePairTimedData> statusData) {
+        statusDataSet.addAll(statusData);
+    }
+
+    public void addAzElData(List<TargetTimedData> targetTimedData) {
+        azElTimedDataTimedDataSet.addAll(targetTimedData);
+    }
+
+    public ValuePairTimedData getCurrentStatus() {
+        return statusDataSet.getCurrent();
+    }
+
+    public boolean isShowRangeRings() {
+        return showRangeRings;
+    }
+
+    public void setShowRangeRings(boolean showRangeRings) {
+        if (this.showRangeRings != showRangeRings) {
+            if (showRangeRings) {
+                rangeCircle.setCenter(getPosition());
+                rangeCircle.setRadius(range);
+                rangeCircle.setValue(AVKey.ROLLOVER_TEXT, String.format("%d meters", range));
+                EntityLayer.add(rangeCircle);
+            } else {
+                EntityLayer.remove(rangeCircle);
+            }
+            this.showRangeRings = showRangeRings;
+            showing = showRangeRings;
+        }
+    }
+
+    public int getRange() {
+        return range;
+    }
+
+    public void setRange(int range) {
+        if (this.range != range) {
+            this.range = range;
+            if (showing) {
+                SwingUtilities.invokeLater(() -> {
+                    rangeCircle.setRadius(range);
+                    rangeCircle.setValue(AVKey.ROLLOVER_TEXT, String.format("%d meters", range));
+                });
+            }
+        }
+    }
+
+    public Color getRangeColor() {
+        return rangeColor;
+    }
+
+    public void setRangeColor(Color rangeColor) {
+        if (this.rangeColor != rangeColor) {
+            this.rangeColor = rangeColor;
+            SwingUtilities.invokeLater(() -> {
+                rangeCircle.getAttributes().setOutlineMaterial(new Material(rangeColor));
+            });
+        }
+    }
+
+    private boolean isAzElValid() {
+        TargetTimedData targetTimedData = azElTimedDataTimedDataSet.getCurrent();
+        return targetTimedData != null && targetTimedData.getAzimuth() != null && targetTimedData.getElevation() != null;
+    }
+
+    private void updateTargetLine() {
+        TargetTimedData targetTimedData = azElTimedDataTimedDataSet.getCurrent();
+        UTMCoord utm = UTMCoord.fromLatLon(getPosition().getLatitude(), getPosition().getLongitude());
+        int range = targetTimedData.getRange() > 0 ? targetTimedData.getRange() : getRange();
+
+        Position endpoint = new Position(UTMCoord.locationFromUTMCoord(
+                utm.getZone(), utm.getHemisphere(),
+                utm.getEasting() + sin(targetTimedData.getAzimuth() * 0.0174533) * range,
+                utm.getNorthing() + cos(targetTimedData.getAzimuth() * 0.0174533) * range,
+                null),
+                sin(targetTimedData.getElevation() * 0.0174533) * range);
+
+        final List<Position> positions = new ArrayList<>();
+        positions.add(getPosition());
+        positions.add(endpoint);
+        SwingUtilities.invokeLater(() -> {
+            targetLine.setPositions(positions);
+            targetLine.setValue(AVKey.ROLLOVER_TEXT, String.format("%.2f°, %.2f°", targetTimedData.getAzimuth(),
+                    targetTimedData.getElevation()));
+        });
+    }
+
+    private void updateVisual(final Position position, final boolean isDisplayable) {
+        if (isDisplayable) {
+            if (!showing) {
+                showing = true;
+                rangeCircle.setCenter(position);
+                rangeCircle.setRadius(range);
+                rangeCircle.setValue(AVKey.ROLLOVER_TEXT, String.format("%d meters", range));
+                EntityLayer.add(rangeCircle);
+            } else {
+                SwingUtilities.invokeLater(() -> {
+                    rangeCircle.setCenter(position);
+                    rangeCircle.setRadius(range);
+                    rangeCircle.setValue(AVKey.ROLLOVER_TEXT, String.format("%d meters", range));
+                });
+            }
+        } else if (showing) {
+            EntityLayer.remove(rangeCircle);
+        }
+    }
+}

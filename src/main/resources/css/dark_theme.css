@@ -1,0 +1,190 @@
+.root {
+  -fx-accent: #ff8900;
+  -fx-base: #3c3f41;
+  -fx-background: #2b2b2b;
+  -fx-control-inner-background: #393939;
+  -fx-control-inner-background-alt: #393939;
+  -fx-focus-color: #ff8900;
+  -fx-light-text-color: #e1e1e1;
+  -fx-fill: #e1e1e1;
+  -transparent-color: rgba(43, 43, 43, 0.95);
+  title-color: #202020;
+  border-color: title-color;
+}
+
+.root.widget-pane {
+  -fx-background-color: rgba(0,0,0,0.6);
+}
+
+.root.widget-pane .tab-header-area .tab-header-background {
+    -fx-background-color: transparent;
+}
+
+.root.widget-pane .title-pane {
+  -fx-background-color: rgba(0,0,0,0.3);
+}
+
+.root.widget-pane .pane .viewport {
+  -fx-background-color: transparent;
+}
+
+.root.widget-pane .list-view {
+  -fx-background-color: transparent;
+  -fx-selection-bar: blue;
+}
+
+.root.widget-pane .pane {
+}
+
+.root.widget-pane .list-view .list-cell {
+  -fx-background-color: transparent;
+}
+
+.root.widget-pane .list-view .list-cell:filled {
+  -fx-background-color: derive(-transparent-color, -20%);
+  -fx-background-insets: 2 0 2 0;
+  -fx-border-color: transparent;
+  -fx-border-width: 2 0 2 0;
+}
+
+.root.widget-pane .list-view .list-cell:filled:selected {
+  -fx-background-color: blue;
+}
+
+.root.widget-pane .list-view .list-cell:filled:selected:hover {
+  -fx-background-color: blue;
+  -fx-border-color: -fx-accent;
+}
+
+.root.widget-pane .list-view .list-cell:filled:hover {
+  -fx-border-color: -fx-accent;
+}
+
+.root.widget-pane .titled-pane > *.content{
+ -fx-background-color: transparent;
+}}
+
+.root.widget-pane .scroll-pane .viewport {
+  -fx-background-color: transparent;
+}
+
+.root.widget-pane .scroll-pane {
+  -fx-background-color: transparent;
+}
+
+.text-id {
+  -fx-font-smoothing-type: lcd;
+  -fx-fill: -fx-light-text-color;
+}
+
+.text-id:disabled {
+  -fx-opacity: .4;
+}
+
+.title-pane {
+  -fx-background-color: title-color;
+}
+
+.transparent-glass {
+  -fx-background-color: derive(-transparent-color, -20%);
+  -fx-background-insets: 12;
+  -fx-background-radius: 0;
+  -fx-effect: dropshadow(gaussian, derive(-transparent-color, -60%), 10, 0, 4, 4);
+}
+
+.transparent-content {
+  -fx-alignment: center;
+  -fx-background-color: -transparent-color;
+  -fx-background-insets: 12;
+  -fx-background-radius: 0;
+  -fx-border-color: derive(-transparent-color, -20%);
+  -fx-border-insets: 10;
+  -fx-border-radius: 0;
+  -fx-border-width: 2;
+  -fx-padding: 10;
+  -fx-spacing: 10;
+}
+
+.alert {
+  -fx-border-color: yellow;
+  -fx-border-width: 5;
+}
+
+.context-menu {
+  -fx-background-color: #2b2b2b;
+  -fx-text-fill: white;
+}
+
+.menu-item .label {
+  -fx-text-fill: #ff8900;
+}
+
+.menu-item:focused .label {
+  -fx-text-fill: -fx-light-text-color;
+}
+
+.check-box .box {
+  -fx-border-color: -fx-light-text-color;
+  -fx-border-radius: 3px;
+}
+
+.check-menu-item:checked {
+  -fx-mark-color: -fx-light-text-color;
+}
+
+.radio-menu-item:checked {
+  -fx-mark-color: -fx-light-text-color;
+}
+
+.dialog-pane > .content.label {
+  -fx-text-fill:-fx-light-text-color;
+}
+
+/*.text-id {
+  -fx-fill: white;
+}*/
+
+.title-cell {
+  -fx-background-color: border-color, -fx-background;
+  -fx-background-insets: 0, 0 1 0 0;
+}
+
+.cell {
+  -fx-background-color: -fx-background;
+}
+
+.transparent-list-view .list-cell {
+  -fx-background-color: rgba(0, 0, 0, 0);
+}
+
+.transparent-list-view .list-cell:filled:selected {
+  -fx-background-color: transparent_highlight-color;
+  -fx-text-fill: white;
+}
+
+.transparent-list-cell {
+  -fx-background-color: rgba(0, 0, 0, 0);
+}
+
+.transparent-list-cell:filled:selected {
+  -fx-background-color: transparent_highlight-color;
+  -fx-text-fill: white;
+}
+
+.transparent-table-view .table-row-cell {
+  -fx-background-color: rgba(0, 0, 0, 0);
+}
+
+.transparent-table-view .table-row-cell:filled:selected {
+  -fx-background-color: transparent_highlight-color;
+  -fx-text-fill: white;
+}
+
+.transparent-table-row-cell {
+  -fx-background-color: rgba(0, 0, 0, 0);
+}
+
+.transparent-table-row-cell:filled:selected {
+  -fx-background-color: transparent_highlight-color;
+  -fx-text-fill: white;
+}

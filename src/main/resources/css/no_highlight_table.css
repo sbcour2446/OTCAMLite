@@ -1,0 +1,10 @@
+.table-view {
+    -fx-selection-bar: transparent;
+    -fx-selection-bar-non-focused: transparent;
+    -fx-cell-focus-inner-border: derive(-fx-color,5%);
+}
+
+.table-row-cell:filled:selected {
+    -fx-table-cell-border-color: derive(-fx-color,5%);
+    -fx-background-color: -fx-color;
+}

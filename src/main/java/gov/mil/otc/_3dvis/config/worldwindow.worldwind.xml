@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--$Id: worldwindow.worldwind.xml 1 2011-07-16 23:22:47Z dcollins $-->
+<WorldWindConfiguration version="1">
+    <LayerList href="gov/mil/otc/_3dvis/config/InitialLayerConfiguration.xml"/>
+    <Property name="gov.nasa.worldwind.avkey.InitialLatitude" value="31"/>
+    <Property name="gov.nasa.worldwind.avkey.InitialLongitude" value="-100"/>
+    <Property name="gov.nasa.worldwind.avkey.MilStd2525IconRetrieverPath" value="jar:file:milstd2525-symbols.jar!"/>
+    <Property name="gov.nasa.worldwind.avkey.ViewClassName"
+              value="gov.mil.otc._3dvis.worldwindex.view.orbit.BasicOrbitViewEx"/>
+    <Property name="gov.nasa.worldwind.avkey.ViewInputHandlerClassName"
+              value="gov.mil.otc._3dvis.worldwindex.view.orbit.OrbitViewInputHandlerEx"/>
+</WorldWindConfiguration>

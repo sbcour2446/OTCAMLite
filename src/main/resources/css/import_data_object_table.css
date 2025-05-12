@@ -1,0 +1,47 @@
+.table-view {
+  -fx-selection-bar: transparent;
+  -fx-selection-bar-non-focused: transparent;
+  -fx-cell-focus-inner-border: derive(-fx-color,5%);
+}
+
+.table-row-cell:new .table-cell {
+  -fx-text-fill: cornflowerblue;
+}
+
+.table-row-cell:missing .table-cell {
+  -fx-text-fill: red;
+}
+
+.table-row-cell:modified .table-cell {
+  -fx-text-fill: tan;
+}
+
+.table-row-cell:loaded .table-cell {
+  -fx-background-color: blue;
+}
+
+.table-row-cell:invalid .table-cell {
+  -fx-background-color: red;
+}
+
+.table-row-cell:filled:selected {
+  -fx-background: -fx-control-inner-background ;
+  -fx-background-color: -fx-table-cell-border-color, -fx-background ;
+  -fx-background-insets: 0, 0 0 1 0 ;
+  -fx-table-cell-border-color: derive(-fx-color, 5%);
+}
+.table-row-cell:odd:filled:selected {
+  -fx-background: -fx-control-inner-background-alt ;
+}
+
+.list-view {
+  -fx-background-insets: 0;
+  -fx-selection-bar: -fx-accent;
+  -fx-selection-bar-non-focused: -fx-accent;
+}
+
+.list-view-transparent {
+  -fx-selection-bar: transparent;
+  -fx-selection-bar-non-focused: transparent;
+  -fx-cell-focus-inner-border: derive(-fx-color,5%);
+}

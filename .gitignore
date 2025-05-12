@@ -1,0 +1,20 @@
+.gradle
+**/build/
+!src/**/build/
+src/main/java/gov/mil/otc/_3dvis/application/generated/
+gradle.properties
+
+# Ignore Gradle GUI config
+gradle-app.setting
+
+# Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
+!gradle-wrapper.jar
+
+# Cache of project
+.gradletasknamecache
+
+# # Work around https://youtrack.jetbrains.com/issue/IDEA-116898
+# gradle/wrapper/gradle-wrapper.properties
+.idea
+/src/main/java/gov/mil/otc/_3dvis/generated/BuildInformation.java
+

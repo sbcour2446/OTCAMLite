@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<BorderPane xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="gov.mil.otc._3dvis.ui.tools.rangefinder.RangeFinderController">
+    <top>
+        <MenuBar BorderPane.alignment="CENTER">
+            <Menu mnemonicParsing="false" text="File">
+                <MenuItem mnemonicParsing="false" text="Save" onAction="#saveOnAction"/>
+                <MenuItem mnemonicParsing="false" text="Load" onAction="#loadOnAction"/>
+                <MenuItem mnemonicParsing="false" text="Close" onAction="#closeOnAction"/>
+            </Menu>
+            <Menu mnemonicParsing="false" text="View">
+                <CheckMenuItem fx:id="alwaysOnTopCheckMenuItem" mnemonicParsing="false" text="Always on Top"/>
+                <SeparatorMenuItem mnemonicParsing="false"/>
+                <fx:define>
+                    <ToggleGroup fx:id="displayToggleGroup"/>
+                </fx:define>
+                <RadioMenuItem fx:id="displayByIdMenuItem" mnemonicParsing="false" onAction="#onDisplayByMenuItemAction"
+                               selected="true" text="Display by ID" toggleGroup="$displayToggleGroup"/>
+                <RadioMenuItem fx:id="displayByNameMenuItem" mnemonicParsing="false"
+                               onAction="#onDisplayByMenuItemAction"
+                               text="Display by Name" toggleGroup="$displayToggleGroup"/>
+                <RadioMenuItem fx:id="displayByDescriptionMenuItem" mnemonicParsing="false"
+                               onAction="#onDisplayByMenuItemAction" text="Display by Description"
+                               toggleGroup="$displayToggleGroup"/>
+            </Menu>
+        </MenuBar>
+    </top>
+    <center>
+        <VBox maxHeight="1.7976931348623157E308" spacing="5.0">
+            <TitledPane maxWidth="1.7976931348623157E308" text="Entries">
+                <HBox maxWidth="1.7976931348623157E308" spacing="5.0">
+                    <GridPane hgap="5.0" vgap="5.0">
+                        <columnConstraints>
+                            <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" minWidth="100.0"/>
+                            <ColumnConstraints hgrow="SOMETIMES" minWidth="100.0"/>
+                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
+                            <ColumnConstraints hgrow="SOMETIMES" minWidth="150.0"/>
+                        </columnConstraints>
+                        <Label text="Source:"/>
+                        <ComboBox fx:id="sourceComboBox" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1"
+                                  GridPane.columnSpan="2147483647"/>
+                        <Label text="Target:" GridPane.rowIndex="1"/>
+                        <ComboBox fx:id="targetComboBox" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1"
+                                  GridPane.columnSpan="2147483647" GridPane.rowIndex="1"/>
+                        <Label text="Min Range(m):" GridPane.rowIndex="2"/>
+                        <TextField fx:id="minRangeTextField" text="0" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                        <Label text="Max Range(m):" GridPane.rowIndex="3"/>
+                        <TextField fx:id="maxRangeTextField" text="10000" GridPane.columnIndex="1"
+                                   GridPane.rowIndex="3"/>
+                        <Label text="Color:" GridPane.rowIndex="4"/>
+                        <ColorPicker fx:id="colorPicker" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1"
+                                     GridPane.hgrow="ALWAYS" GridPane.rowIndex="4"/>
+                        <CheckBox fx:id="hideLinesCheckBox" mnemonicParsing="false" text="Hide Lines"
+                                  GridPane.columnIndex="3" GridPane.rowIndex="2"/>
+                        <CheckBox fx:id="followTerrainCheckBox" mnemonicParsing="false" text="Follow Terrain"
+                                  GridPane.columnIndex="3" GridPane.rowIndex="3"/>
+                        <CheckBox fx:id="ignoreFiltersCheckBox" mnemonicParsing="false" text="Ignore Filters"
+                                  GridPane.columnIndex="3" GridPane.rowIndex="4"/>
+                        <HBox spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="5">
+                            <Button mnemonicParsing="false" onAction="#addButtonOnAction" text="Add"/>
+                            <Button fx:id="updateButton" disable="true" mnemonicParsing="false"
+                                    onAction="#updateButtonOnAction" text="Update"/>
+                        </HBox>
+                        <rowConstraints>
+                            <RowConstraints/>
+                            <RowConstraints/>
+                            <RowConstraints/>
+                            <RowConstraints/>
+                            <RowConstraints/>
+                            <RowConstraints/>
+                        </rowConstraints>
+                    </GridPane>
+                    <VBox spacing="5.0" HBox.hgrow="ALWAYS">
+                        <TableView fx:id="entryTable" maxWidth="1.7976931348623157E308">
+                            <columnResizePolicy>
+                                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                            </columnResizePolicy>
+                        </TableView>
+                        <Button mnemonicParsing="false" onAction="#removeButtonOnAction" text="Remove"/>
+                    </VBox>
+                </HBox>
+                <padding>
+                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                </padding>
+            </TitledPane>
+            <TitledPane alignment="TOP_LEFT" maxHeight="1.7976931348623157E308" text="Distances" VBox.vgrow="ALWAYS">
+                <TableView fx:id="rangeLineTable">
+                    <columnResizePolicy>
+                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                    </columnResizePolicy>
+                </TableView>
+                <padding>
+                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                </padding>
+            </TitledPane>
+        </VBox>
+    </center>
+</BorderPane>

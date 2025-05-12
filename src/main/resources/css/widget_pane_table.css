@@ -1,0 +1,21 @@
+.table-view {
+  -fx-selection-bar: transparent;
+  -fx-selection-bar-non-focused: transparent;
+  -fx-cell-focus-inner-border: derive(-fx-color,5%);
+}
+
+.table-row-cell:active .table-cell {
+  -fx-background-color: red;
+}
+
+.list-view {
+  -fx-background-insets: 0;
+  -fx-selection-bar: -fx-accent;
+  -fx-selection-bar-non-focused: -fx-accent;
+}
+
+.list-view-transparent {
+  -fx-selection-bar: transparent;
+  -fx-selection-bar-non-focused: transparent;
+  -fx-cell-focus-inner-border: derive(-fx-color,5%);
+}

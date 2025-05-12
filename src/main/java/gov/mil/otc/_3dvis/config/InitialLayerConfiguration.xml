@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--$Id-->
+<!--This document specifies the initial layers to load into the layer manager-->
+<LayerList title="Base Layers">
+<!--    <Layer className="gov.nasa.worldwind.layers.StarsLayer" title="Stars" actuate="OnRequest"/>-->
+<!--    <Layer className="gov.nasa.worldwind.layers.SkyGradientLayer" title="Sky" actuate="OnRequest"/>-->
+    <Layer className="gov.mil.otc._3dvis.worldwindex.layers.earth.BMNGOneImage" title="Earth Image" actuate="onLoad"/>
+    <Layer href="config/Earth/BMNGWMSLayer2.xml" title="Blue Marble" actuate="onLoad"/>
+<!--    <Layer href="config/Earth/LandsatI3WMSLayer2.xml" title="Landsat 7 ICube" actuate="OnRequest"/>-->
+<!--    <Layer href="config/Earth/USGSTopoLowResLayer.xml" title="USGS Topo LowRes" actuate="OnRequest"/>-->
+<!--    <Layer href="config/Earth/USGSTopoMedResLayer.xml" title="USGS Topo MedRes" actuate="OnRequest"/>-->
+<!--    <Layer href="config/Earth/USGSTopoHighResLayer.xml" title="USGS Topo HighRes" actuate="OnRequest"/>-->
+<!--    <Layer href="config/Earth/EarthAtNightLayer.xml" actuate="onRequest"/>-->
+    <Layer href="config/Earth/BingImagery.xml" title="Bing Imagery" actuate="onLoad"/>
+<!--    <Layer href="config/Earth/OpenStreetMap.xml" actuate="onRequest"/>-->
+<!--    <Layer className="gov.nasa.worldwind.layers.Earth.NASAWFSPlaceNameLayer" title="Place Names" actuate="onLoad"/>-->
+    <Layer className="gov.nasa.worldwind.layers.LatLonGraticuleLayer" title="Lat-Lon Graticule" actuate="OnRequest"/>
+    <Layer className="gov.nasa.worldwind.layers.Earth.UTMGraticuleLayer" title="UTM Graticule" actuate="OnRequest"/>
+    <Layer className="gov.nasa.worldwind.layers.Earth.MGRSGraticuleLayer" title="MGRS Graticule" actuate="OnRequest"/>
+</LayerList>

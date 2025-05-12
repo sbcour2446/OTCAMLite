@@ -1,0 +1,114 @@
+package gov.mil.otc._3dvis.project.avcad;
+
+import gov.mil.otc._3dvis.WWController;
+import gov.mil.otc._3dvis.entity.EntityFilter;
+import gov.mil.otc._3dvis.entity.IconImageHelper;
+import gov.mil.otc._3dvis.entity.PlaybackEntity;
+import gov.mil.otc._3dvis.entity.base.EntityId;
+import gov.mil.otc._3dvis.settings.IconType;
+import gov.nasa.worldwind.geom.Position;
+import gov.nasa.worldwind.layers.RenderableLayer;
+
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.List;
+
+public class LidarEntity extends PlaybackEntity {
+
+    private final List<LidarScan> lidarScanList = new ArrayList<>();
+    private final RenderableLayer lidarLayer = new RenderableLayer();
+    private double opacity = 1.0;
+    private boolean overrideHeight = false;
+    private double height = 0.0;
+
+    public LidarEntity(EntityId entityId) {
+        super(entityId);
+        lidarLayer.setName("LidarEntity:" + entityId.toString());
+        lidarLayer.setPickEnabled(true);
+        WWController.addLayer(lidarLayer);
+    }
+
+    public void addLidarScan(LidarScan lidarScan) {
+        synchronized (lidarScanList) {
+            lidarScanList.add(lidarScan);
+        }
+    }
+
+    public double getOpacity() {
+        return opacity;
+    }
+
+    public void setOpacity(double opacity) {
+        this.opacity = opacity;
+        synchronized (lidarScanList) {
+            for (LidarScan lidarScan : lidarScanList) {
+                lidarScan.setOpacity(opacity);
+            }
+        }
+    }
+
+    public boolean isOverrideHeight() {
+        return overrideHeight;
+    }
+
+    public double getOverrideHeight() {
+        return height;
+    }
+
+    public void setOverrideHeight(boolean overrideHeight, double height) {
+        this.overrideHeight = overrideHeight;
+        this.height = height;
+        synchronized (lidarScanList) {
+            for (LidarScan lidarScan : lidarScanList) {
+                lidarScan.setOverrideHeight(overrideHeight, height);
+            }
+        }
+    }
+
+    @Override
+    public boolean update(long time, EntityFilter entityFilter) {
+        boolean hasChange = super.update(time, entityFilter);
+
+        if (isInScope() && hasChange) {
+            System.out.println("in scope");
+        }
+
+        boolean showScan = isInScope() && getPosition() != null && isFiltered();
+        updateScanDisplay(time, showScan);
+
+        return hasChange;
+    }
+
+    public void updateScanDisplay(long time, boolean showScan) {
+        synchronized (lidarScanList) {
+            for (LidarScan lidarScan : lidarScanList) {
+                if (showScan) {
+                    lidarScan.update(time, lidarLayer);
+                } else {
+                    lidarScan.dispose(lidarLayer);
+                }
+            }
+        }
+    }
+
+    @Override
+    public BufferedImage createIcon() {
+        return IconImageHelper.getPinIcon(new Color(102, 51, 0), true);
+    }
+
+    @Override
+    public IconType getIconType() {
+        return IconType.PIN;
+    }
+
+    @Override
+    public void dispose() {
+        synchronized (lidarScanList) {
+            for (LidarScan lidarScan : lidarScanList) {
+                lidarScan.dispose(lidarLayer);
+            }
+            lidarScanList.clear();
+        }
+    }
+}
