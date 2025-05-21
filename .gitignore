@@ -18,3 +18,9 @@ gradle-app.setting
 .idea
 /src/main/java/gov/mil/otc/_3dvis/generated/BuildInformation.java
 
+#ignore build files
+
+/build
+/buildSrc
+/.gradle
+/.vscode
