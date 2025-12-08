@@ -40,9 +40,6 @@ $B64Pat = [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes(":$MyP
 git config --global --remove http.https://devops.cloud.army.mil
 git config --global --add http.https://devops.cloud.army.mil.extraHeader "Authorization: Basic $B64Pat"
 
-yaml
-Copy code
-
 ---
 
 ## Clone Code Repo
@@ -52,9 +49,6 @@ Copy code
 3. Paste this URL:
 
 https://devops.cloud.army.mil/ATEC%20Data%20Mesh/OTC/_git/OTCAM%20Lite
-
-yaml
-Copy code
 
 4. Open the cloned folder in VSCode  
 
@@ -68,15 +62,9 @@ In the VSCode terminal:
 
 .\gradlew clean deployAll
 
-sql
-Copy code
-
 This creates the full distribution in:
 
 build\dist\
-
-yaml
-Copy code
 
 ---
 
@@ -86,9 +74,6 @@ From the distribution folder:
 
 cd build\dist
 .\jre\bin\java.exe -DTENA_PLATFORM="w10-vs2019-64" -DTENA_VERSION="6.0.8" -jar ".\3DVis-2.0.2.20.jar"
-
-yaml
-Copy code
 
 ---
 
