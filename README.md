@@ -1,9 +1,9 @@
-# Introduction
-OTCAM is a blanket program that currently contains two applications: ICDL and 3DVis. OTCAM is owned, developed and maintained by OTC contractors. It is constantly being modified to meet different test requirements.
+# Introduction 
+OTCAM is a blanket program that currently contains two applications: ICDL and 3DVis. OTCAM is owned, developed, and maintained by OTC contractors and is continually updated to meet evolving test requirements.
 
-ICDL is an application that provides a way for different LVC systems to interoperate via a common TENA interface. It can provide an interface between Live RTCA systems like HITS, XLCC and FlexTrain and simulation systems like OneSAF, ExCIS and MUSE. It allows simulated fire missions to have effects on real players and allows real players' locations and health to be seen by simulations. It has built-in data collection abilities that can be utilized in post-event analysis in 3DVis.
+ICDL enables different LVC systems to interoperate through a common TENA interface, connecting Live RTCA systems (HITS, XLCC, FlexTrain) with simulation systems (OneSAF, ExCIS, MUSE). It synchronizes simulated effects onto real players and provides data collection for post-event analysis.
 
-3DVis is an application that provides data visualization on a 3D map, both live and post-event. Live, it interfaces with ICDL and provides the current Common Operating Picture (COP) while allowing the user to back up in time and replay past events. Post-event, it provides the same 3D map while replaying and time-synchronizing events from multiple data sources including LVC data, video captures, JBCP messaging, and manual data including TIRs and surveys. Custom displays can be developed per test. These have included LIDAR scans and results, system alerts, CSV locations, UAS metadata, and data logs.
+3DVis provides 3D map visualization in both live and post-event modes. It integrates with ICDL to present the Common Operating Picture (COP) and supports replay, timeline control, RTCA interaction, and synchronized visualization across LVC logs, videos, JBCP messages, TIRs, surveys, and custom overlays such as LIDAR, alerts, UAS metadata, and CSV-based data.
 
 ![Alt text](./OTCAM_Architecture.png)
 
@@ -17,40 +17,53 @@ From the GPU AVD Software Center:
 2. Install Git  
 3. Install VSCode  
 
+---
+
 ## Create Azure Repo PAT
-1. Login to Azure DevOps: https://devops.cloud.army.mil/ATEC%20Data%20Mesh/OTC  
+
+1. Login to Azure DevOps:  
+   https://devops.cloud.army.mil/ATEC%20Data%20Mesh/OTC  
 2. Click your User Icon (top right)  
 3. Select Security  
 4. Select New Token  
 5. Create a token (Full Access for now)  
 6. Save the PAT to a .txt file  
 
+---
+
 ## Add PAT Credentials to Git
-Open PowerShell and run (replace "yourPAT" with the actual PAT):
+
+Open PowerShell and run the following commands, replacing **yourPAT** with the actual PAT:
 
 $MyPat = "yourPAT"
 $B64Pat = [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes(":$MyPat"))
 git config --global --remove http.https://devops.cloud.army.mil
 git config --global --add http.https://devops.cloud.army.mil.extraHeader "Authorization: Basic $B64Pat"
 
-mathematica
+yaml
 Copy code
 
+---
+
 ## Clone Code Repo
+
 1. Open VSCode  
-2. Select "Clone Git Repository"  
-3. Paste the repo URL:  
+2. Select “Clone Git Repository”  
+3. Paste this URL:
 
 https://devops.cloud.army.mil/ATEC%20Data%20Mesh/OTC/_git/OTCAM%20Lite
 
-markdown
+yaml
 Copy code
 
-4. Open the cloned folder  
+4. Open the cloned folder in VSCode  
+
+---
 
 # Build and Test
 
 ## Build OTCAM
+
 In the VSCode terminal:
 
 .\gradlew clean deployAll
@@ -58,31 +71,37 @@ In the VSCode terminal:
 sql
 Copy code
 
-This generates the full distribution in:
+This creates the full distribution in:
 
 build\dist\
 
 yaml
 Copy code
 
+---
+
 # Run OTCAM
-From the dist folder:
+
+From the distribution folder:
 
 cd build\dist
 .\jre\bin\java.exe -DTENA_PLATFORM="w10-vs2019-64" -DTENA_VERSION="6.0.8" -jar ".\3DVis-2.0.2.20.jar"
 
-bash
+yaml
 Copy code
 
+---
+
 # Contribute
-Please coordinate contributions with the OTC development team. Standard DevOps workflows apply:
+
+Contributions should follow OTC development practices, including:
 
 - Branching  
 - Pull Requests  
 - Code Review  
 - Versioned Builds  
 
-For README guidance, see:  
+For README guidance:  
 https://docs.microsoft.com/en-us/azure/devops/repos/git/create-a-readme
 
 Example READMEs:  
