@@ -7,8 +7,9 @@ trigger:
 - main
 
 pool:
-  name: default
-  vmImage: 'windows-latest'
+  name: ATEC-Data-Mesh-AgentPool-AKS
+  demands:
+    - DEVOPS_AGENT_ENV -equals cloud.army.D
 
 steps:
 - task: Gradle@2
