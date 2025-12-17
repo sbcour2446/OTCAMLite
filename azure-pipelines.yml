@@ -8,6 +8,7 @@ trigger:
 
 pool:
   name: default
+  vmImage: 'windows-latest'
 
 steps:
 - task: Gradle@2
