@@ -1,12 +1,10 @@
 # azure-pipelines.yml
-# Minimal “fail fast + show why it’s pending” pipeline
-
 trigger:
 - main
 
 jobs:
 - job: Build
-  displayName: "Build (diagnose agent scheduling)"
+  displayName: "Build (diagnose agent + Java)"
   timeoutInMinutes: 10
 
   pool:
@@ -15,9 +13,14 @@ jobs:
       - DEVOPS_AGENT_ENV -equals cloud.army.D
 
   steps:
-  - script: |
+  - bash: |
+      set -e
       echo "Agent is running this job."
-      echo "AGENT_NAME=$(AGENT_NAME)"
-      echo "AGENT_MACHINENAME=$(AGENT_MACHINENAME)"
-      echo "BUILD_BUILDID=$(BUILD_BUILDID)"
+      echo "AGENT_NAME=${AGENT_NAME:-<empty>}"
+      echo "AGENT_MACHINENAME=${AGENT_MACHINENAME:-<empty>}"
+      echo "BUILD_BUILDID=${BUILD_BUILDID:-<empty>}"
+      echo ""
+      echo "JAVA_HOME=${JAVA_HOME:-<empty>}"
+      command -v java || true
+      java -version || true
     displayName: "Confirm agent assignment"
