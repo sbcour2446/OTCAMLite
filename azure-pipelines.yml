@@ -39,6 +39,19 @@ steps:
     javaHomeOption: 'Path'
     jdkDirectory: '$(JAVA_HOME)'
 
+- task: CopyFiles@2
+  displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)'
+  inputs:
+    SourceFolder: '$(System.DefaultWorkingDirectory)'
+    Contents: '**/*.jar' # Adjust this to match your specific build outputs (e.g., '**/*.war')
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+
+- task: PublishPipelineArtifact@1
+  displayName: 'Publish Pipeline Artifact'
+  inputs:
+    artifactName: 'drop' # Name your artifact (e.g., 'drop' or 'my-application-package')
+    targetPath: '$(Build.ArtifactStagingDirectory)'
+
 # Checkmarx SAST scan
 - task: Application security testing@2024
   displayName: "Checkmarx SAST"
