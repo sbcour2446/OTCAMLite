@@ -2,12 +2,15 @@ trigger:
 - main
 
 pool:
-  name: ATEC-Data-Mesh-AgentPool-AKS
+  name: 'ATEC-Data-Mesh-AgentPool-AKS'
   demands:
-    - DEVOPS_AGENT_ENV -equals cloud.army.D
+    - 'AGENT_SELECTOR -equals cloud.army.P'   # PROD agents required for Checkmarx reachability
+
+variables:
+  system.debug: true
 
 steps:
-# Install + select JDK 21 (because your build targets source release 21)
+# Install + select JDK 21 (needed because your project compiles with source release 21)
 - bash: |
     set -euxo pipefail
     echo "Before:"
@@ -23,7 +26,7 @@ steps:
     echo "##vso[task.setvariable variable=JAVA_HOME]/usr/lib/jvm/java-21-openjdk-amd64"
   displayName: "Install + select JDK 21"
 
-# Build with Gradle using JAVA_HOME from above
+# Build
 - task: Gradle@2
   displayName: "Gradle build (JDK 21)"
   inputs:
@@ -37,12 +40,18 @@ steps:
     jdkDirectory: '$(JAVA_HOME)'
 
 # Checkmarx SAST scan
-- task: Application security testing@2025
+- task: Application security testing@2024
   displayName: "Checkmarx SAST"
   inputs:
+    sastCaChainFilePath: /etc/ssl/certs/ca-certificates.crt
     projectName: 'OTCAM Checkmarx'
     enableProxy: false
     enableSastScan: true
-    CheckmarxService: 'CHECKMARX_CONNECTION_PROD'
+    CheckmarxService: 'CHECKMARX_CONNECTION_PROD'   # must exist in YOUR project
+    fullTeamName: 'CxServer\OTC'
     enableSastBranching: false
+    preset: 'STIG'
+    generatePDFReport: true
+    avoidDuplicateScans: true
     enableDependencyScan: false
+    folderExclusion: ''
