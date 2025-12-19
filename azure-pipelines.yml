@@ -7,12 +7,12 @@ pool:
     - DEVOPS_AGENT_ENV -equals cloud.army.D
 
 steps:
+# Install + select JDK 21 (because your build targets source release 21)
 - bash: |
     set -euxo pipefail
     echo "Before:"
     java -version || true
 
-    # Install JDK 21 (requires apt access + permissions)
     if command -v sudo >/dev/null 2>&1; then SUDO=sudo; else SUDO=""; fi
     $SUDO apt-get update
     $SUDO apt-get install -y openjdk-21-jdk ca-certificates
@@ -20,17 +20,29 @@ steps:
     echo "After install:"
     /usr/lib/jvm/java-21-openjdk-amd64/bin/java -version
 
-    # Set JAVA_HOME to JDK 21 for subsequent steps
     echo "##vso[task.setvariable variable=JAVA_HOME]/usr/lib/jvm/java-21-openjdk-amd64"
   displayName: "Install + select JDK 21"
 
+# Build with Gradle using JAVA_HOME from above
 - task: Gradle@2
   displayName: "Gradle build (JDK 21)"
   inputs:
+    workingDirectory: ''
     gradleWrapperFile: 'gradlew'
     gradleOptions: '-Xmx3072m'
     tasks: 'build'
-    javaHomeOption: 'Path'
-    jdkDirectory: '$(JAVA_HOME)'
     publishJUnitResults: true
     testResultsFiles: '**/TEST-*.xml'
+    javaHomeOption: 'Path'
+    jdkDirectory: '$(JAVA_HOME)'
+
+# Checkmarx SAST scan
+- task: Application security testing@2025
+  displayName: "Checkmarx SAST"
+  inputs:
+    projectName: 'OTCAM Checkmarx'
+    enableProxy: false
+    enableSastScan: true
+    CheckmarxService: 'CHECKMARX_CONNECTION_PROD'
+    enableSastBranching: false
+    enableDependencyScan: false
