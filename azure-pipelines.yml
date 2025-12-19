@@ -1,7 +1,4 @@
-# Gradle
-# Build your Java project and run tests with Gradle using a Gradle wrapper script.
-# Add steps that analyze code, save build artifacts, deploy, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/java
+# azure-pipelines.yml
 
 trigger:
 - main
@@ -12,14 +9,58 @@ pool:
     - DEVOPS_AGENT_ENV -equals cloud.army.D
 
 steps:
+# 1) Quick visibility into what the agent actually is
+- bash: |
+    set -euxo pipefail
+    echo "Agent name: $AGENT_NAME"
+    echo "Agent machine name: $AGENT_MACHINENAME"
+    echo "OS: $(uname -a)"
+    echo "PATH=$PATH"
+    echo "JAVA_HOME=${JAVA_HOME:-}"
+    command -v java || true
+    java -version || true
+  displayName: "Diagnose agent + Java"
+
+# 2) Install JDK 8 only if java isn't present
+#    (This requires the agent container to allow apt-get/sudo and have repo access.)
+- bash: |
+    set -euxo pipefail
+
+    if command -v java >/dev/null 2>&1; then
+      echo "Java already present. Skipping install."
+      exit 0
+    fi
+
+    echo "Java not found. Installing OpenJDK 8..."
+    if command -v sudo >/dev/null 2>&1; then
+      SUDO="sudo"
+    else
+      SUDO=""
+    fi
+
+    $SUDO apt-get update
+    $SUDO apt-get install -y openjdk-8-jdk ca-certificates
+
+    echo "Installed Java:"
+    java -version
+
+    # Best-effort JAVA_HOME export for later steps
+    JAVA_BIN="$(readlink -f "$(command -v java)")"
+    JAVA_HOME_DIR="$(dirname "$(dirname "$JAVA_BIN")")"
+    echo "Detected JAVA_HOME=$JAVA_HOME_DIR"
+    echo "##vso[task.setvariable variable=JAVA_HOME]$JAVA_HOME_DIR"
+  displayName: "Install JDK 8 if missing"
+  # If you *know* your agent image already has Java, you can remove this step.
+
+# 3) Run Gradle, explicitly pointing at JAVA_HOME so the Gradle task doesn't have to "discover" it
 - task: Gradle@2
+  displayName: "Gradle build"
   inputs:
     workingDirectory: ''
     gradleWrapperFile: 'gradlew'
     gradleOptions: '-Xmx3072m'
-    javaHomeOption: 'JDKVersion'
-    jdkVersionOption: '1.8'
-    jdkArchitectureOption: 'x64'
+    tasks: 'build'
     publishJUnitResults: true
     testResultsFiles: '**/TEST-*.xml'
-    tasks: 'build'
+    javaHomeOption: 'Path'
+    jdkDirectory: '$(JAVA_HOME)'
