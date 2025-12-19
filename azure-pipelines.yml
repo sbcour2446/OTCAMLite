@@ -1,26 +1,34 @@
-# azure-pipelines.yml
 trigger:
 - main
 
-jobs:
-- job: Build
-  displayName: "Build (diagnose agent + Java)"
-  timeoutInMinutes: 10
+pool:
+  name: ATEC-Data-Mesh-AgentPool-AKS
+  demands:
+    - DEVOPS_AGENT_ENV -equals cloud.army.D
 
-  pool:
-    name: ATEC-Data-Mesh-AgentPool-AKS
-    demands:
-      - DEVOPS_AGENT_ENV -equals cloud.army.D
+steps:
+- bash: |
+    set -euxo pipefail
+    echo "Agent: ${AGENT_NAME}"
+    java -version
 
-  steps:
-  - bash: |
-      set -e
-      echo "Agent is running this job."
-      echo "AGENT_NAME=${AGENT_NAME:-<empty>}"
-      echo "AGENT_MACHINENAME=${AGENT_MACHINENAME:-<empty>}"
-      echo "BUILD_BUILDID=${BUILD_BUILDID:-<empty>}"
-      echo ""
-      echo "JAVA_HOME=${JAVA_HOME:-<empty>}"
-      command -v java || true
-      java -version || true
-    displayName: "Confirm agent assignment"
+    # Derive JAVA_HOME from the java binary location
+    JAVA_BIN="$(readlink -f "$(command -v java)")"
+    JAVA_HOME_DIR="$(dirname "$(dirname "$JAVA_BIN")")"
+    echo "Detected JAVA_HOME=$JAVA_HOME_DIR"
+
+    # Persist for later tasks
+    echo "##vso[task.setvariable variable=JAVA_HOME]$JAVA_HOME_DIR"
+  displayName: "Set JAVA_HOME from java"
+
+- task: Gradle@2
+  displayName: "Gradle build (use agent JDK)"
+  inputs:
+    workingDirectory: ''
+    gradleWrapperFile: 'gradlew'
+    gradleOptions: '-Xmx3072m'
+    javaHomeOption: 'Path'
+    jdkDirectory: '$(JAVA_HOME)'
+    publishJUnitResults: true
+    testResultsFiles: '**/TEST-*.xml'
+    tasks: 'build'
