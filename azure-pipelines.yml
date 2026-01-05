@@ -47,7 +47,7 @@ steps:
     TargetFolder: '$(Build.ArtifactStagingDirectory)'
 
 - task: PublishBuildArtifacts@1
-displayName: 'Publish Artifact: drop'
+  displayName: 'Publish Artifact: drop'
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)' # Required. Path to the folder to publish
     ArtifactName: 'drop' # Required. The name of the artifact
