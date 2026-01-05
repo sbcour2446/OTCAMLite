@@ -46,11 +46,12 @@ steps:
     Contents: '**/*.jar' # Adjust this to match your specific build outputs (e.g., '**/*.war')
     TargetFolder: '$(Build.ArtifactStagingDirectory)'
 
-- task: PublishPipelineArtifact@1
-  displayName: 'Publish Pipeline Artifact'
+- task: PublishBuildArtifacts@1
+displayName: 'Publish Artifact: drop'
   inputs:
-    artifactName: 'drop' # Name your artifact (e.g., 'drop' or 'my-application-package')
-    targetPath: '$(Build.ArtifactStagingDirectory)'
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)' # Required. Path to the folder to publish
+    ArtifactName: 'drop' # Required. The name of the artifact
+    publishLocation: 'Container' # Required. 'Container' (Azure Pipelines) or 'FilePath' (file share)
 
 # Checkmarx SAST scan
 - task: Application security testing@2024
